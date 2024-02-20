@@ -154,7 +154,6 @@ app.delete('/character/:id/delete', (req, res) => {
             return;
         }
 
-        // Eliminar el personaje del array
         characters.splice(characterIndex, 1);
 
         fs.writeFile('db.json', JSON.stringify(characters), (error) => {
