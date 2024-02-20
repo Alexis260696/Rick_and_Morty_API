@@ -83,7 +83,7 @@ app.get('/characters', (req, res) => {
 })
 
 
-app.post('/addCharacter', (req, res) => {
+app.post('/character/add', (req, res) => {
     console.log(req.body);
     fs.readFile("./db.json", "utf8", (error, data) => {
         if (error) {
@@ -107,7 +107,7 @@ app.post('/addCharacter', (req, res) => {
 });
 
 
-app.patch('/updateCharacter/:id', (req, res) => {
+app.patch('/character/:id/update', (req, res) => {
     const characterId = parseInt(req.params.id);
     const updatedData = req.body;
 
@@ -139,7 +139,7 @@ app.patch('/updateCharacter/:id', (req, res) => {
 });
 
 
-app.delete('/deleteCharacter/:id', (req, res) => {
+app.delete('/character/:id/delete', (req, res) => {
     const characterId = parseInt(req.params.id);
 
     fs.readFile("./db.json", "utf8", (error, data) => {
