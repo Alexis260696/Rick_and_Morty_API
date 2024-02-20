@@ -30,10 +30,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 
-app.get('/', (req, res) => {
-    res.send('Hello World!')
-})
-
 app.get('/resetLocal', (req, res) => {
     let getPage = (url, getNextPage, db = []) => {
         axios.get(url)
@@ -63,6 +59,7 @@ app.get('/resetLocal', (req, res) => {
     res.send('OK')
 })
 
+
 app.get('/characters', (req, res) => {
     fs.readFile("./db.json", "utf8", (error, data) => {
         if (error) {
@@ -74,6 +71,7 @@ app.get('/characters', (req, res) => {
         res.send(aux)
     });
 })
+
 
 app.post('/addCharacter', (req, res) => {
     console.log(req.body);
@@ -97,6 +95,7 @@ app.post('/addCharacter', (req, res) => {
         res.send('OK');
     });
 });
+
 
 app.patch('/updateCharacter/:id', (req, res) => {
     const characterId = parseInt(req.params.id);
@@ -128,7 +127,6 @@ app.patch('/updateCharacter/:id', (req, res) => {
         });
     });
 });
-
 
 
 app.delete('/deleteCharacter/:id', (req, res) => {
