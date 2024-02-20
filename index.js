@@ -26,6 +26,7 @@ const app = express()
 const port = 3000
 const axios = require('axios');
 const fs = require('fs')
+const { clear } = require('console')
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
@@ -93,6 +94,69 @@ app.post('/addCharacter', (req, res) => {
         res.send('OK');
     });
 });
+
+app.patch('/updateCharacter/:id', (req, res) => {
+    const characterId = parseInt(req.params.id);
+    const updatedData = req.body;
+
+    fs.readFile("./db.json", "utf8", (error, data) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        let characters = JSON.parse(data);
+        const characterIndex = characters.findIndex(character => character.id === characterId);
+
+        if (characterIndex === -1) {
+            return res.status(404).send('Character not found');
+        }
+
+        // Actualizar el personaje con los nuevos datos
+        characters[characterIndex] = { ...characters[characterIndex], ...updatedData };
+
+        fs.writeFile('db.json', JSON.stringify(characters), (error) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).send('Internal Server Error');
+            }
+
+            return res.send('Character updated successfully');
+        });
+    });
+});
+
+
+
+app.delete('/deleteCharacter/:id', (req, res) => {
+    const characterId = parseInt(req.params.id);
+
+    fs.readFile("./db.json", "utf8", (error, data) => {
+        if (error) {
+            console.log(error);
+            return res.status(500).send('Internal Server Error');
+        }
+
+        let characters = JSON.parse(data);
+        const characterIndex = characters.findIndex(character => character.id === characterId);
+
+        if (characterIndex === -1) {
+            return res.status(404).send('Character not found');
+        }
+
+        // Eliminar el personaje del array
+        characters.splice(characterIndex, 1);
+
+        fs.writeFile('db.json', JSON.stringify(characters), (error) => {
+            if (error) {
+                console.error(error);
+            }
+
+            res.send('Character deleted successfully');
+        });
+    });
+});
+
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
