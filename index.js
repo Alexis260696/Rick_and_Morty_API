@@ -21,7 +21,6 @@ Puntos extra:
 const express = require('express')
 const axios = require('axios');
 const fs = require('fs')
-const { clear } = require('console')
 const app = express()
 const port = 3000
 const apiLink = "https://rickandmortyapi.com/api/character"
