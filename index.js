@@ -124,7 +124,6 @@ app.patch('/character/:id/update', (req, res) => {
             return res.status(404).send('Character not found');
         }
 
-        // Actualizar el personaje con los nuevos datos
         characters[characterIndex] = { ...characters[characterIndex], ...updatedData };
 
         fs.writeFile('db.json', JSON.stringify(characters), (error) => {
