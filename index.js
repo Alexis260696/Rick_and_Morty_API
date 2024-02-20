@@ -18,17 +18,17 @@ Puntos extra:
 - Formatear los datos antes del envío, para presentarlos de diferente manera a la dada por la API de Rick & Morty.
 */
 
-const apiLink = "https://rickandmortyapi.com/api/character"
-console.log("hola mundo")
-
 const express = require('express')
-const app = express()
-const port = 3000
 const axios = require('axios');
 const fs = require('fs')
 const { clear } = require('console')
+const app = express()
+const port = 3000
+const apiLink = "https://rickandmortyapi.com/api/character"
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
+
 
 app.get('/', (req, res) => {
     res.send('Hello World!')
@@ -48,6 +48,7 @@ app.get('/resetLocal', (req, res) => {
                     fs.writeFile('db.json', JSON.stringify(db), (error) => {
                         if (error) {
                             console.error(error);
+                            return;
                         }
                     });
                     console.log(db);
@@ -55,6 +56,7 @@ app.get('/resetLocal', (req, res) => {
             })
             .catch((error) => {
                 console.error(error);
+                return;
             })
     }
     getPage(apiLink, getPage)
@@ -89,6 +91,7 @@ app.post('/addCharacter', (req, res) => {
         fs.writeFile('db.json', JSON.stringify(aux), (error) => {
             if (error) {
                 console.error(error);
+                return;
             }
         });
         res.send('OK');
@@ -102,7 +105,7 @@ app.patch('/updateCharacter/:id', (req, res) => {
     fs.readFile("./db.json", "utf8", (error, data) => {
         if (error) {
             console.log(error);
-            return res.status(500).send('Internal Server Error');
+            return;
         }
 
         let characters = JSON.parse(data);
@@ -118,7 +121,7 @@ app.patch('/updateCharacter/:id', (req, res) => {
         fs.writeFile('db.json', JSON.stringify(characters), (error) => {
             if (error) {
                 console.error(error);
-                return res.status(500).send('Internal Server Error');
+                return;
             }
 
             return res.send('Character updated successfully');
@@ -134,14 +137,14 @@ app.delete('/deleteCharacter/:id', (req, res) => {
     fs.readFile("./db.json", "utf8", (error, data) => {
         if (error) {
             console.log(error);
-            return res.status(500).send('Internal Server Error');
+            return;
         }
 
         let characters = JSON.parse(data);
         const characterIndex = characters.findIndex(character => character.id === characterId);
 
         if (characterIndex === -1) {
-            return res.status(404).send('Character not found');
+            return;
         }
 
         // Eliminar el personaje del array
@@ -150,6 +153,7 @@ app.delete('/deleteCharacter/:id', (req, res) => {
         fs.writeFile('db.json', JSON.stringify(characters), (error) => {
             if (error) {
                 console.error(error);
+                return;
             }
 
             res.send('Character deleted successfully');
