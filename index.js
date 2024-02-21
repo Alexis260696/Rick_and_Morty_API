@@ -87,27 +87,26 @@ app.get('/characters', (req, res) => {
             console.log(error);
             return;
         }
-        let aux = JSON.parse(data)
-        console.log(aux);
-        res.send(aux)
+        let db = JSON.parse(data)
+        console.log(db);
+        res.send(db)
     });
 })
 
 
 app.post('/character/add', (req, res) => {
-    console.log(req.body);
     fs.readFile("./db.json", "utf8", (error, data) => {
         if (error) {
             console.log(error);
             return;
         }
-        let aux = JSON.parse(data)
-        let index = aux.length - 1;
-        let newID = aux[index].id + 1;
+        let db = JSON.parse(data)
+        let index = db.length - 1;
+        let newID = db[index].id + 1;
         let newRegister = req.body;
         newRegister.id = newID;
-        aux.push(newRegister);
-        fs.writeFile('db.json', JSON.stringify(aux), (error) => {
+        db.push(newRegister);
+        fs.writeFile('db.json', JSON.stringify(db), (error) => {
             if (error) {
                 console.error(error);
                 return;
@@ -132,7 +131,8 @@ app.patch('/character/:id/update', (req, res) => {
         const characterIndex = characters.findIndex(character => character.id === characterId);
 
         if (characterIndex === -1) {
-            return res.status(404).send('Character not found');
+            res.status(404).send('Character not found');
+            return
         }
 
         characters[characterIndex] = { ...characters[characterIndex], ...updatedData };
@@ -162,7 +162,8 @@ app.delete('/character/:id/delete', (req, res) => {
         const characterIndex = characters.findIndex(character => character.id === characterId);
 
         if (characterIndex === -1) {
-            return;
+            res.status(404).send('Character not found');
+            return
         }
 
         characters.splice(characterIndex, 1);
