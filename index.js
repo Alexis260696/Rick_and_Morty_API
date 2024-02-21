@@ -29,42 +29,53 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }))
 
 
-app.get('/character/:id', (req, res) => {
-    const characterId = parseInt(req.params.id);
-    const character = req.characters.find(char => char.id === characterId);
-    if (character) {
-        res.send(character);
-    } else {
-        res.status(404).send('Character not found');
-    }
-});
+let getPage = (url, getNextPage, db = []) => {
+    axios.get(url)
+        .then((response) => {
+            let nextPageURL = response.data.info.next
+            console.log(nextPageURL);
+            db.push(...response.data.results);
+            if (nextPageURL !== null) {
+                getNextPage(nextPageURL, getNextPage, db);
+            }
+            else {
+                fs.writeFile('db.json', JSON.stringify(db), (error) => {
+                    if (error) {
+                        console.error(error);
+                        return;
+                    }
+                });
+                console.log(db);
+            }
+        })
+        .catch((error) => {
+            console.error(error);
+            return;
+        });
+};
 
+getPage(apiLink, getPage);
+
+app.get('/character/:id', (req, res) => {
+    fs.readFile("./db.json", "utf8", (error, data) => {
+        if (error) {
+            console.log(error);
+            return;
+        }
+        let db = JSON.parse(data)
+
+        const characterId = parseInt(req.params.id);
+        const character = db.find(char => char.id === characterId);
+        if (character) {
+            res.send(character);
+            console.log(character);
+        } else {
+            res.status(404).send('Character not found');
+        }
+    });
+})
 
 app.get('/resetLocal', (req, res) => {
-    let getPage = (url, getNextPage, db = []) => {
-        axios.get(url)
-            .then((response) => {
-                let nextPageURL = response.data.info.next
-                console.log(nextPageURL);
-                db.push(...response.data.results);
-                if (nextPageURL !== null) {
-                    getNextPage(nextPageURL, getNextPage, db);
-                }
-                else {
-                    fs.writeFile('db.json', JSON.stringify(db), (error) => {
-                        if (error) {
-                            console.error(error);
-                            return;
-                        }
-                    });
-                    console.log(db);
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                return;
-            })
-    }
     getPage(apiLink, getPage)
     res.send('OK')
 })
